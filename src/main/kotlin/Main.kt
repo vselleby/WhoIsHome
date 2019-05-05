@@ -10,6 +10,10 @@ fun main() {
         localAddress = datagramSocket.localAddress.hostAddress
     }
 
+    val deviceHandler = DeviceHandler()
+    val webServer = WebServer()
+    webServer.start()
+
     val networkPoller = NetworkPoller(localAddress)
     networkPoller.initialise()
     Timer().scheduleAtFixedRate(networkPoller, 1000, 100000)

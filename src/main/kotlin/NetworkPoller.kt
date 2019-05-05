@@ -16,9 +16,11 @@ class NetworkPoller(var localAddress: String) : TimerTask() {
     override fun run() {
         val discoveredDevices = ArrayList<Device>()
         val reachableAddresses = HashSet<InetAddress>()
-        for (i in 0..255) {
+        for (i in 0..254) {
             val addressToTest = InetAddress.getByName(baseAddress.plus(i))
+            println("Trying: " + baseAddress.plus(i))
             if (addressToTest.isReachable(100)) {
+                println("Reached: " + baseAddress.plus(i))
                 reachableAddresses.add(addressToTest)
             }
         }
