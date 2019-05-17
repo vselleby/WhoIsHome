@@ -1,4 +1,4 @@
-
+package webapi
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.grizzly.servlet.WebappContext
 import org.glassfish.jersey.servlet.ServletContainer
@@ -29,6 +29,6 @@ class WebServer {
     }
 
     companion object {
-        private const val PORT = 8091
+        private const val PORT = 8088
     }
 }

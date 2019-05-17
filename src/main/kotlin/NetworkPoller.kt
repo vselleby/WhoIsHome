@@ -5,9 +5,8 @@ import java.net.InetAddress
 import java.util.TimerTask
 import java.util.stream.Collectors
 
-class NetworkPoller(var localAddress: String) : TimerTask() {
+class NetworkPoller(var localAddress: String, val deviceHandler: DeviceHandler) : TimerTask() {
     private var baseAddress : String = ""
-    private val connectedDevices = ArrayList<Device>()
 
     fun initialise() {
         val splittedAddress = localAddress.split(".")
@@ -37,11 +36,11 @@ class NetworkPoller(var localAddress: String) : TimerTask() {
     }
 
     private fun updateConnectedDevices(discoveredDevices: ArrayList<Device>) {
-        val newDevices = discoveredDevices.toSet().minus(connectedDevices.toSet())
-        val removedDevices = connectedDevices.toSet().minus(discoveredDevices.toSet())
+        val newDevices = discoveredDevices.toSet().minus(deviceHandler.connectedDevices.toSet())
+        val removedDevices = deviceHandler.connectedDevices.toSet().minus(discoveredDevices.toSet())
 
-        connectedDevices.addAll(newDevices)
-        connectedDevices.removeAll(removedDevices)
+        deviceHandler.connectedDevices.addAll(newDevices)
+        deviceHandler.connectedDevices.removeAll(removedDevices)
 
         println("New devices discovered: \n")
         newDevices.forEach(System.out::println)
