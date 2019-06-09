@@ -1,5 +1,4 @@
 import com.jcraft.jsch.ChannelExec
-import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import java.io.BufferedReader
@@ -10,7 +9,7 @@ class SSHPoller(private val user: String, private val keyPath: String, private v
     private val connectedDevicesPath = "/tmp/clientlist.json"
     private val jsch = JSch()
     private lateinit var session : Session
-    private lateinit var channel : ChannelSftp
+    private lateinit var channel : ChannelExec
 
     fun initialise() {
         jsch.addIdentity(keyPath)
@@ -18,21 +17,26 @@ class SSHPoller(private val user: String, private val keyPath: String, private v
         session.setConfig("StrictHostKeyChecking", "no")
 
         session.connect()
-
-        channel = session.openChannel("sftp") as ChannelSftp
     }
 
     override fun run() {
         try {
+            channel = session.openChannel("exec") as ChannelExec
+            channel.setCommand("cat $connectedDevicesPath")
             channel.connect()
-            val bufferedReader = BufferedReader(InputStreamReader(channel.get(connectedDevicesPath)))
-            val lines = bufferedReader.lines().reduce { s1: String?, s2: String? ->  s1.plus(s2) }
-            if (lines.isPresent) {
-                println(lines)
+            val bufferedReader = BufferedReader(InputStreamReader(channel.inputStream))
+            val deviceJsonString = bufferedReader.lines().reduce { s1: String?, s2: String? ->  s1.plus(s2) }.orElse("")
+            if (deviceJsonString.isNotEmpty()) {
+                parseJsonString(deviceJsonString)
             }
         }
         finally {
             channel.disconnect()
         }
+    }
+
+    private fun parseJsonString(jsonString: String) {
+        println(jsonString)
+
     }
 }
