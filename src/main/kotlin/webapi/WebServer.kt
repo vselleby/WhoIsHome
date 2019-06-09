@@ -6,6 +6,8 @@ import org.glassfish.jersey.servlet.ServletContainer
 
 class WebServer {
     private val server: HttpServer
+    private val port = 8088
+
 
     init {
         val context = WebappContext("who-is-home-rest")
@@ -15,7 +17,7 @@ class WebServer {
         servlet.setInitParameter("jersey.config.server.provider.packages", "webapi")
         servlet.addMapping("/api/*")
 
-        server = HttpServer.createSimpleServer(null, PORT)
+        server = HttpServer.createSimpleServer(null, port)
         context.deploy(server)
     }
 
@@ -26,9 +28,5 @@ class WebServer {
 
     fun stop() {
         server.shutdownNow()
-    }
-
-    companion object {
-        private const val PORT = 8088
     }
 }

@@ -22,10 +22,16 @@ dependencies {
     compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version:'2.28'
     compile group: 'org.glassfish.jersey.media', name: 'jersey-media-sse', version:'2.28'
     compile group: 'org.glassfish.jersey.ext', name: 'jersey-bean-validation', version:'2.28'
+
+    // https://mvnrepository.com/artifact/com.jcraft/jsch
+    compile group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+
+
     implementation "javax.xml.bind:jaxb-api:2.2.11"
     implementation "com.sun.xml.bind:jaxb-core:2.2.11"
     implementation "com.sun.xml.bind:jaxb-impl:2.2.11"
     implementation "javax.activation:activation:1.1.1"
+    
 }
 
 compileKotlin {

@@ -17,7 +17,6 @@ class RestWebApi {
     private val deviceHandler = Context.instance.deviceHandler
 
     @GET
-    @Produces("application/json")
     fun list() : List<String> {
         return deviceHandler?.connectedDevices?.
             stream()?.
@@ -27,5 +26,6 @@ class RestWebApi {
             collect(Collectors.toList()).
             orEmpty()
     }
+
 
 }

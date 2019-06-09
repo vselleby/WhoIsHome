@@ -1,6 +1,8 @@
-class Device(val ipAddress: String, val macAddress: String) {
+class Device(val ipAddress: String, val macAddress: String, var name: String) {
+    constructor(ipAddress: String, macAddress: String) : this(ipAddress, macAddress, "")
+
     override fun toString(): String {
-        return "Device(ipAddress='$ipAddress', macAddress='$macAddress')"
+        return "Device(ipAddress='$ipAddress', macAddress='$macAddress', name='$name')"
     }
 
     override fun equals(other: Any?): Boolean {
