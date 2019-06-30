@@ -13,7 +13,7 @@ class NetworkPoller(var localAddress: String, val deviceHandler: DeviceHandler) 
         baseAddress = splittedAddress[0].plus(".".plus(splittedAddress[1].plus(".").plus(splittedAddress[2].plus("."))))
     }
     override fun run() {
-        val discoveredDevices = ArrayList<Device>()
+        val discoveredDevices = HashSet<Device>()
         val reachableAddresses = HashSet<InetAddress>()
         for (i in 0..254) {
             val addressToTest = InetAddress.getByName(baseAddress.plus(i))
@@ -32,21 +32,7 @@ class NetworkPoller(var localAddress: String, val deviceHandler: DeviceHandler) 
                 }
             }
         }
-        updateConnectedDevices(discoveredDevices)
-    }
-
-    private fun updateConnectedDevices(discoveredDevices: ArrayList<Device>) {
-        val newDevices = discoveredDevices.toSet().minus(deviceHandler.connectedDevices.toSet())
-        val removedDevices = deviceHandler.connectedDevices.toSet().minus(discoveredDevices.toSet())
-
-        deviceHandler.connectedDevices.addAll(newDevices)
-        deviceHandler.connectedDevices.removeAll(removedDevices)
-
-        println("New devices discovered: \n")
-        newDevices.forEach(System.out::println)
-
-        println("Devices no longer connected: \n")
-        removedDevices.forEach(System.out::println)
+        deviceHandler.updateConnectedDevices(discoveredDevices)
     }
 
     private fun parseDeviceInformationFromArpString(arpLine: String): Device {

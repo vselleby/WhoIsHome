@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
     Context.instance.deviceHandler = deviceHandler
 
     when {
-        args.size == 3 -> startSSHPoller(args[0], args[1], args[2])
+        args.size == 3 -> startSSHPoller(args[0], args[1], args[2], deviceHandler)
         args.isEmpty() -> startNetworkPoller(deviceHandler)
         else -> {
             println("Usage: Requires <user>,  <Path to ssh key> and <IP address to router> for ASUS routers and no arguments for Ping polling")
@@ -33,8 +33,8 @@ fun startNetworkPoller(deviceHandler: DeviceHandler) {
     Timer().scheduleAtFixedRate(networkPoller, 1000, 20000)
 }
 
-fun startSSHPoller(user: String, keyPath: String, ipAddress: String) {
-    val sshPoller = SSHPoller(user, keyPath, ipAddress)
+fun startSSHPoller(user: String, keyPath: String, ipAddress: String, deviceHandler: DeviceHandler) {
+    val sshPoller = SSHPoller(user, keyPath, ipAddress, deviceHandler)
     sshPoller.initialise()
     Timer().scheduleAtFixedRate(sshPoller, 1000, 10000)
 

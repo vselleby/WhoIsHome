@@ -1,8 +1,9 @@
-class Device(val ipAddress: String, val macAddress: String, var name: String) {
-    constructor(ipAddress: String, macAddress: String) : this(ipAddress, macAddress, "")
+class Device(val ipAddress: String, val macAddress: String, var rssi: Int, var frequencyBand: FrequencyBand, var name: String) {
+    constructor(ipAddress: String, macAddress: String) : this(ipAddress, macAddress, 0, FrequencyBand.UNKNOWN, "")
+    constructor(ipAddress: String, macAddress: String, rssi: Int, frequencyBand: FrequencyBand) : this(ipAddress, macAddress, rssi, frequencyBand, "")
 
     override fun toString(): String {
-        return "Device(ipAddress='$ipAddress', macAddress='$macAddress', name='$name')"
+        return "Device(ipAddress='$ipAddress', macAddress='$macAddress', rssi='$rssi', frequencyBand='$frequencyBand', name='$name')"
     }
 
     override fun equals(other: Any?): Boolean {
