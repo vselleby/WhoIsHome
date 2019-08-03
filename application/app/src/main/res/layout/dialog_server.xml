@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/server_dialog">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/server_address_text_view"
+            android:text="@string/server_ip_address"
+            android:layout_alignParentStart="true"/>
+
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/server_address_edit_text"
+            android:text="@string/base_address"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="100dp"
+            android:layout_alignEnd="@+id/server_address_text_view"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/server_port_text_view"
+            android:text="@string/port"
+            android:layout_below="@+id/server_address_edit_text"/>
+
+
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/server_port_edit_text"
+            android:text="@string/base_port"
+            android:inputType="number"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="100dp"
+            android:layout_below="@+id/server_address_edit_text"
+            android:layout_alignEnd="@+id/server_port_text_view"/>
+
+</RelativeLayout>

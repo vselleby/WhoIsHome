@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">WhoIsHome-app</string>
+    <string name="server_button_text">Connect to Server</string>
+    <string name="who_is_home">Who is Home</string>
+    <string name="connect_to_server">Connect to Server</string>
+    <string name="vpn_button_text">Connect to VPN</string>
+    <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
+    <string name="server_ip_address">IP Address</string>
+    <string name="base_address">0.0.0.0</string>
+    <string name="port">Port</string>
+    <string name="base_port">0</string>
+    <string name="device_information_button_text">Show Devices</string>
 </resources>
