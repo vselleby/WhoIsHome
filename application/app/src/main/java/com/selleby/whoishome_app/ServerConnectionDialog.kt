@@ -7,21 +7,21 @@ import android.widget.EditText
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-class ServerConnectionDialog(context: Context, private val connectionState: ConnectionState) : ConnectionDialog(context) {
-    var serverAddressEditText : EditText? = null
-    var serverPortEditText : EditText? = null
+class ServerConnectionDialog(context: Context, private val connectionStateHandler: ConnectionStateHandler) : ConnectionDialog(context) {
+    private var serverAddressEditText : EditText? = null
+    private var serverPortEditText : EditText? = null
 
     override fun createConnectButtonListener(): View.OnClickListener {
         return View.OnClickListener {
             if (serverAddressEditText?.text.isNullOrEmpty() || serverPortEditText?.text.isNullOrEmpty()) {
                 displayConnectionError("Server IP-address and port has to be provided")
-                connectionState.connected = false
+                connectionStateHandler.connected = false
                 return@OnClickListener
             }
             val serverAddress = serverAddressEditText?.text!!.toString()
             val port = serverPortEditText?.text!!.toString().let { Integer.parseInt(it) }
-            connectionState.serverAddress = serverAddress
-            connectionState.serverPort = port
+            connectionStateHandler.connectionState.serverAddress = serverAddress
+            connectionStateHandler.connectionState.serverPort = port
             var errorMessage = ""
             val networkThread =  Thread {
                 try {
@@ -40,7 +40,7 @@ class ServerConnectionDialog(context: Context, private val connectionState: Conn
                 displayConnectionError(errorMessage)
             }
             else {
-                connectionState.connected = true
+                connectionStateHandler.connected = true
                 dismiss()
             }
         }
