@@ -41,14 +41,14 @@ class SSHPoller(private val user: String, private val keyPath: String, private v
     private fun parseJsonString(jsonString: String) {
         val foundDevices = HashSet<Device>()
         val rootNode = ObjectMapper().readTree(jsonString)
-        val fiveGNodes = rootNode.findValue("5G")
-        val twoGNodes = rootNode.findValue("2G")
+        val fiveGNodes: JsonNode? = rootNode.findValue("5G")
+        val twoGNodes: JsonNode? = rootNode.findValue("2G")
 
-        fiveGNodes.fields().forEach {
+        fiveGNodes?.fields()?.forEach {
             foundDevices.add(parseDevice(it, FrequencyBand.FIVE_GHZ))
         }
 
-        twoGNodes.fields().forEach {
+        twoGNodes?.fields()?.forEach {
             foundDevices.add(parseDevice(it, FrequencyBand.TWO_GHZ))
         }
         deviceHandler.updateConnectedDevices(foundDevices)
