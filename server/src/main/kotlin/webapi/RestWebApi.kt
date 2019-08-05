@@ -17,14 +17,11 @@ class RestWebApi {
     private val deviceHandler = Context.instance.deviceHandler
 
     @GET
-    fun list() : List<String> {
-        return deviceHandler?.connectedDevices?.
-            stream()?.
-            map { device ->
-                device.toString()
-            }?.
-            collect(Collectors.toList()).
-            orEmpty()
+    fun list() : List<DeviceResponse> {
+        return deviceHandler!!.connectedDevices.
+                stream().
+                map(::DeviceResponse).
+                collect(Collectors.toList<DeviceResponse>())
     }
 
 
