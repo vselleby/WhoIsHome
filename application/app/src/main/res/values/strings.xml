@@ -11,4 +11,8 @@
     <string name="port">Port</string>
     <string name="base_port">0</string>
     <string name="device_information_button_text">Show Devices</string>
+    <string name="device_name">Device Name</string>
+    <string name="mac_address">MAC Address</string>
+    <string name="ip_address">IP Address</string>
+    <string name="notification">Notification</string>
 </resources>
