@@ -3,6 +3,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import device.Device
+import device.DeviceHandler
+import device.FrequencyBand
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.TimerTask

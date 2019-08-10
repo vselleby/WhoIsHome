@@ -1,3 +1,5 @@
+package device
+
 enum class FrequencyBand {
     UNKNOWN,
     FIVE_GHZ,

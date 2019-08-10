@@ -1,10 +1,14 @@
+import device.DeviceHandler
+import device.DevicePersistor
 import webapi.WebServer
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.Timer
 
 fun main(args: Array<String>) {
-    val deviceHandler =  DeviceHandler()
+    val devicePersistor = DevicePersistor(DEVICE_FILE_PATH)
+    val deviceHandler = DeviceHandler(devicePersistor)
+    deviceHandler.persistentDevices = devicePersistor.load().toHashSet()
     Context.instance.deviceHandler = deviceHandler
 
     when {
@@ -37,5 +41,7 @@ fun startSSHPoller(user: String, keyPath: String, ipAddress: String, deviceHandl
     val sshPoller = SSHPoller(user, keyPath, ipAddress, deviceHandler)
     sshPoller.initialise()
     Timer().scheduleAtFixedRate(sshPoller, 1000, 10000)
-
 }
+
+// TODO: This should be placed in a separate configuration file along with the arguments
+const val DEVICE_FILE_PATH = "devices.json"

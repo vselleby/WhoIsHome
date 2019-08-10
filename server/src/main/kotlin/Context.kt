@@ -1,3 +1,4 @@
+import device.DeviceHandler
 
 //TODO: Remove usage of singleton.
 class Context {

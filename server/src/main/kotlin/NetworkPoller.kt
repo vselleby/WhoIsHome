@@ -1,4 +1,6 @@
 
+import device.Device
+import device.DeviceHandler
 import java.io.BufferedReader
 import java.io.FileReader
 import java.net.InetAddress
