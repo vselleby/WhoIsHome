@@ -14,30 +14,30 @@ import javax.ws.rs.PathParam
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Path("devices")
 class RestWebApi {
     //TODO: Replace this with dependency injection if possible
     private val deviceHandler = Context.instance.deviceHandler
 
-    @POST
+    @GET
     @Path("ping")
-    fun ping() {
-        return
+    fun ping() : String {
+        return "{\"timeStamp\":${System.currentTimeMillis()}}"
     }
 
     @GET
-    @Path("devices")
     fun list() : List<Device> {
-        return deviceHandler?.connectedDevices?.toList()?: emptyList()
+        return deviceHandler?.connectedDevices?.toList() ?: emptyList()
     }
 
     @GET
-    @Path("devices/{macAddress}")
+    @Path("{macAddress}")
     fun getDevice(@PathParam("macAddress") macAddress: String) : Device? {
         return deviceHandler?.getDevice(macAddress)
     }
 
     @POST
-    @Path("devices/{macAddress}")
+    @Path("{macAddress}")
     fun modifyDeivce(@PathParam("macAddress") macAddress: String, @Valid request: DeviceModificationRequest) {
         if (!request.name.isNullOrEmpty()) {
             deviceHandler?.setName(macAddress, request.name)

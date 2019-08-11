@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -11,11 +12,13 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Timer
 import java.util.TimerTask
+import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
 
 class DeviceInformationActivity: AppCompatActivity() {
@@ -56,46 +59,92 @@ class DeviceInformationActivity: AppCompatActivity() {
         }
     }
 
+    private fun sendDeviceModificationRequest(device: DeviceInformation, name: String?, notificationEnabled: Boolean?) {
+        val jsonObject = JSONObject()
+        jsonObject.put("name", name)
+        jsonObject.put("notificationEnabled", notificationEnabled)
+        devicePollingTimer.schedule(0) {
+            val getDeviceInfoUrl = "http://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices/${device.macAddress.replace(":", 	"%3A")}"
+            val request = JsonObjectRequest(
+                Request.Method.POST,
+                getDeviceInfoUrl,
+                jsonObject,
+                Response.Listener { response ->
+                    val modifiedDevice = parseDeviceInformation(response)
+                    devices.remove(modifiedDevice)
+                    devices.add(modifiedDevice)
+                },
+                Response.ErrorListener { error ->
+                    Log.e(TAG, "Error when modifying device: $error")
+                }
+            )
+            requestQueue.add(request)
+
+        }
+    }
+
     private fun parseDeviceInformationArray(jsonArray: JSONArray) {
+        val currentDevices = HashSet<DeviceInformation>()
         for (i in 0 until jsonArray.length()) {
             val jsonObject = jsonArray.getJSONObject(i)
-            parseDeviceInformation(jsonObject)
-            updateTable()
+            currentDevices.add(parseDeviceInformation(jsonObject))
         }
+
+        devices.removeAll(devices.minus(currentDevices))
+        devices.addAll(currentDevices)
+        updateTable()
     }
 
-    private fun updateTable() {
-        tableLayout.removeAllViews()
-        tableLayout.addView(informationTableRow)
-        for (device : DeviceInformation in devices) {
-            tableLayout.addView(createTableRow(device))
-        }
-    }
-
-    private fun createTableRow(device: DeviceInformation): TableRow {
-        val tableRow = TableRow(this)
-        val nameView = TextView(this)
-        nameView.text = device.name
-        val ipAddressView = TextView(this)
-        ipAddressView.text = device.ipAddress
-        val macAddressView = TextView(this)
-        macAddressView.text = device.macAddress
-        val notificationCheckBox = CheckBox(this)
-        notificationCheckBox.isChecked = device.notification
-        tableRow.addView(nameView)
-        tableRow.addView(ipAddressView)
-        tableRow.addView(macAddressView)
-        tableRow.addView(notificationCheckBox)
-        return tableRow
-    }
-
-    private fun parseDeviceInformation(jsonObject: JSONObject) {
+    private fun parseDeviceInformation(jsonObject: JSONObject): DeviceInformation {
         val ipAddress: String = jsonObject.get("ipAddress") as String
         val macAddress: String = jsonObject.get("macAddress") as String
         val name = jsonObject.get("name") as String
-        val device = DeviceInformation(ipAddress, macAddress, name, false)
-        devices.remove(device)
-        devices.add(device)
+        return DeviceInformation(ipAddress, macAddress, name, false)
+    }
+
+    private fun updateTable() {
+        for (device : DeviceInformation in devices) {
+            val tableRow = updateTableRow(device)
+            if (tableRow.parent == null) {
+                tableLayout.addView(tableRow)
+            }
+        }
+    }
+
+    private fun updateTableRow(device: DeviceInformation): TableRow {
+        val tableRow = device.tableRow ?: layoutInflater.inflate(R.layout.table_row_device_template, null) as TableRow
+
+        val nameEditText = tableRow.findViewById<EditText>(R.id.device_name_value)
+        if (!nameEditText.hasFocus()) {
+            nameEditText.setText(device.name)
+        }
+        tableRow.findViewById<TextView>(R.id.ip_address_value).text = device.ipAddress
+        tableRow.findViewById<TextView>(R.id.mac_address_value).text = device.macAddress
+        tableRow.findViewById<CheckBox>(R.id.notification_value).isChecked = device.notification
+
+        if (device.tableRow == null) {
+            addDeviceListeners(tableRow, device)
+            device.tableRow = tableRow
+        }
+        return tableRow
+    }
+
+    private fun addDeviceListeners(tableRow: TableRow, device: DeviceInformation) {
+        val nameEditText = tableRow.findViewById<EditText>(R.id.device_name_value)
+        val notificationCheckBox = tableRow.findViewById<CheckBox>(R.id.notification_value)
+
+        notificationCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked != device.notification) {
+                sendDeviceModificationRequest(device,null, isChecked)
+            }
+        }
+        
+        nameEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus && nameEditText.text.toString() != device.name) {
+                sendDeviceModificationRequest(device, nameEditText.text.toString(), null)
+            }
+        }
+
     }
 
     override fun onStop() {
@@ -106,10 +155,12 @@ class DeviceInformationActivity: AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = DeviceInformationActivity::class.java.name;
+        private val TAG = DeviceInformationActivity::class.java.name
     }
 
     data class DeviceInformation(var ipAddress: String, var macAddress: String, var name: String, var notification: Boolean) {
+        var tableRow: TableRow? = null
+
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
