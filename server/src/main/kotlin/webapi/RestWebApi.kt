@@ -1,13 +1,15 @@
 package webapi
 
 import Context
+import com.fasterxml.jackson.annotation.JsonProperty
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import device.Device
-import javax.validation.Valid
+import java.util.logging.Logger
+import javax.ws.rs.NotFoundException
 import javax.ws.rs.POST
 import javax.ws.rs.PathParam
 
@@ -18,10 +20,12 @@ import javax.ws.rs.PathParam
 class RestWebApi {
     //TODO: Replace this with dependency injection if possible
     private val deviceHandler = Context.instance.deviceHandler
+    private val logger = Logger.getLogger(RestWebApi::class.java.name)
 
     @GET
     @Path("ping")
     fun ping() : String {
+        logger.info("Ping received")
         return "{\"timeStamp\":${System.currentTimeMillis()}}"
     }
 
@@ -38,17 +42,19 @@ class RestWebApi {
 
     @POST
     @Path("{macAddress}")
-    fun modifyDeivce(@PathParam("macAddress") macAddress: String, @Valid request: DeviceModificationRequest) {
-        if (!request.name.isNullOrEmpty()) {
-            deviceHandler?.setName(macAddress, request.name)
+    fun modifyDeivce(@PathParam("macAddress") macAddress: String, request: DeviceModificationRequest): Device {
+        logger.info("DeviceModificationRequest with name:${request.name} and notificationEnabled:${request.notificationEnabled}")
+        val immutableName = request.name
+        if (!immutableName.isNullOrEmpty()) {
+            deviceHandler?.setName(macAddress, immutableName)
         }
 
-        if (request.notificationEnabled != null) {
-            deviceHandler?.setNotification(macAddress, request.notificationEnabled)
+        val immutableNotification = request.notificationEnabled
+        if (immutableNotification != null) {
+            deviceHandler?.setNotification(macAddress, immutableNotification)
         }
+        return deviceHandler?.getDevice(macAddress) ?: throw NotFoundException("Device with MacAddress: $macAddress not found")
     }
-
-
 }
 
-class DeviceModificationRequest(val name: String?, val notificationEnabled: Boolean?)
+data class DeviceModificationRequest(@JsonProperty("name") var name: String?, @JsonProperty("notificationEnabled") var notificationEnabled: Boolean?)

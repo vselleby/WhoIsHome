@@ -33,30 +33,28 @@ class ServerConnectionDialog(context: Context, private val connectionStateHandle
             }
             connectionStateHandler.connectionState.serverAddress = serverAddress
             connectionStateHandler.connectionState.serverPort = port
-            Timer().schedule(0) {
-                try {
-                    val inetAddress = InetAddress.getByName(serverAddress)
-                    val requestQueue = Volley.newRequestQueue(context)
-                    requestQueue.add(
-                        JsonObjectRequest(
-                            Request.Method.GET,
-                            "http://${inetAddress.hostAddress}:$port/api/devices/ping",
-                            null,
-                            Response.Listener { response ->
-                                Toast.makeText(context, "Successfully connected to server", Toast.LENGTH_LONG).show()
-                                connectionStateHandler.connected = true
-                                dismiss()
-                                requestQueue.stop()
-                            },
-                            Response.ErrorListener { error ->
-                                displayConnectionError("Error when trying to connect to server:  ${error?.networkResponse?.statusCode}")
-                                requestQueue.stop()
-                            }
-                        )
+            try {
+                val inetAddress = InetAddress.getByName(serverAddress)
+                val requestQueue = Volley.newRequestQueue(context)
+                requestQueue.add(
+                    JsonObjectRequest(
+                        Request.Method.GET,
+                        "http://${inetAddress.hostAddress}:$port/api/devices/ping",
+                        null,
+                        Response.Listener { _ ->
+                            Toast.makeText(context, "Successfully connected to server", Toast.LENGTH_LONG).show()
+                            connectionStateHandler.connected = true
+                            dismiss()
+                            requestQueue.stop()
+                        },
+                        Response.ErrorListener { error ->
+                            displayConnectionError("Error when trying to connect to server:  ${error?.networkResponse?.statusCode}")
+                            requestQueue.stop()
+                        }
                     )
-                } catch (e: UnknownHostException) {
-                    displayConnectionError("Invalid Server Address: $serverAddress")
-                }
+                )
+            } catch (e: UnknownHostException) {
+                displayConnectionError("Invalid Server Address: $serverAddress")
             }
         }
     }

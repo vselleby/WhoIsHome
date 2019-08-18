@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -20,6 +21,8 @@ import java.util.Timer
 import java.util.TimerTask
 import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
+
+
 
 class DeviceInformationActivity: AppCompatActivity() {
     private lateinit var connectionState: ConnectionState
@@ -63,24 +66,31 @@ class DeviceInformationActivity: AppCompatActivity() {
         val jsonObject = JSONObject()
         jsonObject.put("name", name)
         jsonObject.put("notificationEnabled", notificationEnabled)
-        devicePollingTimer.schedule(0) {
-            val getDeviceInfoUrl = "http://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices/${device.macAddress.replace(":", 	"%3A")}"
-            val request = JsonObjectRequest(
-                Request.Method.POST,
-                getDeviceInfoUrl,
-                jsonObject,
-                Response.Listener { response ->
-                    val modifiedDevice = parseDeviceInformation(response)
-                    devices.remove(modifiedDevice)
-                    devices.add(modifiedDevice)
-                },
-                Response.ErrorListener { error ->
-                    Log.e(TAG, "Error when modifying device: $error")
-                }
-            )
-            requestQueue.add(request)
-
+        Log.i(TAG, "Sending deviceModificationRequest with name:$name notificationEnabled:$notificationEnabled")
+        val getDeviceInfoUrl = "http://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices/${device.macAddress.replace(":", 	"%3A")}"
+        val request = object : JsonObjectRequest(
+            Method.POST,
+            getDeviceInfoUrl,
+            jsonObject,
+            Response.Listener { response ->
+                val modifiedDevice = parseDeviceInformation(response)
+                devices.remove(modifiedDevice)
+                devices.add(modifiedDevice)
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Error when modifying device: $error")
+            }
+        ) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["Content-Type"] = "application/json"
+                return params
+            }
         }
+
+        requestQueue.add(request)
+
     }
 
     private fun parseDeviceInformationArray(jsonArray: JSONArray) {
@@ -135,7 +145,7 @@ class DeviceInformationActivity: AppCompatActivity() {
 
         notificationCheckBox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked != device.notification) {
-                sendDeviceModificationRequest(device,null, isChecked)
+                sendDeviceModificationRequest(device, null, isChecked)
             }
         }
         

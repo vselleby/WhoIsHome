@@ -25,7 +25,7 @@ class DeviceHandler(private val devicePersistor: DevicePersistor) {
             println("New device discovered: $it")
         }
         removedDevices.forEach {
-            println("device.Device no longer connected: $it")
+            println("Device no longer connected: $it")
         }
     }
 
@@ -67,7 +67,7 @@ class DeviceHandler(private val devicePersistor: DevicePersistor) {
         device.notificationEnabled = notificationEnabled
         persistentDevices.remove(device)
         persistentDevices.add(device)
-        devicePersistor.save(connectedDevices.toList())
+        devicePersistor.save(persistentDevices.toList())
     }
 
     fun setName(macAddress: String, name: String) {
@@ -75,6 +75,6 @@ class DeviceHandler(private val devicePersistor: DevicePersistor) {
         device.name = name
         persistentDevices.remove(device)
         persistentDevices.add(device)
-        devicePersistor.save(connectedDevices.toList())
+        devicePersistor.save(persistentDevices.toList())
     }
 }
