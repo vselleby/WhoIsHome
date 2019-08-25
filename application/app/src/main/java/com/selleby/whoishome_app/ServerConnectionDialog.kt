@@ -11,8 +11,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import java.net.InetAddress
 import java.net.UnknownHostException
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 class ServerConnectionDialog(context: Context, private val connectionStateHandler: ConnectionStateHandler) : ConnectionDialog(context) {
     private var serverAddressEditText : EditText? = null
@@ -39,7 +37,7 @@ class ServerConnectionDialog(context: Context, private val connectionStateHandle
                 requestQueue.add(
                     JsonObjectRequest(
                         Request.Method.GET,
-                        "http://${inetAddress.hostAddress}:$port/api/devices/ping",
+                        "https://${inetAddress.hostAddress}:$port/api/devices/ping",
                         null,
                         Response.Listener { _ ->
                             Toast.makeText(context, "Successfully connected to server", Toast.LENGTH_LONG).show()

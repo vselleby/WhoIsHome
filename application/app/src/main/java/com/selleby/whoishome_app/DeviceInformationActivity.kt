@@ -19,9 +19,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Timer
 import java.util.TimerTask
-import kotlin.concurrent.schedule
 import kotlin.concurrent.scheduleAtFixedRate
-
 
 
 class DeviceInformationActivity: AppCompatActivity() {
@@ -47,7 +45,7 @@ class DeviceInformationActivity: AppCompatActivity() {
 
     private fun launchDeviceInfoTask() {
         this.deviceInfoPollingTask = devicePollingTimer.scheduleAtFixedRate(0L, 10000L) {
-            val getDeviceInfoUrl = "http://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices"
+            val getDeviceInfoUrl = "https://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices"
             val request = JsonArrayRequest(
                 Request.Method.GET, getDeviceInfoUrl, null,
                 Response.Listener { response ->
@@ -67,7 +65,7 @@ class DeviceInformationActivity: AppCompatActivity() {
         jsonObject.put("name", name)
         jsonObject.put("notificationEnabled", notificationEnabled)
         Log.i(TAG, "Sending deviceModificationRequest with name:$name notificationEnabled:$notificationEnabled")
-        val getDeviceInfoUrl = "http://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices/${device.macAddress.replace(":", 	"%3A")}"
+        val getDeviceInfoUrl = "https://${connectionState.serverAddress}:${connectionState.serverPort}/api/devices/${device.macAddress.replace(":", 	"%3A")}"
         val request = object : JsonObjectRequest(
             Method.POST,
             getDeviceInfoUrl,
