@@ -1,10 +1,12 @@
 package device
 
+import java.util.logging.Logger
 import javax.ws.rs.NotFoundException
 
 class DeviceHandler(private val devicePersistor: DevicePersistor) {
     val connectedDevices = HashSet<Device>()
     var persistentDevices = HashSet<Device>()
+    private val logger = Logger.getLogger(DeviceHandler::class.java.name)
 
     fun updateConnectedDevices(discoveredDevices: HashSet<Device>) {
         updateExistingDevices(discoveredDevices)
@@ -22,16 +24,16 @@ class DeviceHandler(private val devicePersistor: DevicePersistor) {
         connectedDevices.addAll(newDevices)
 
         newDevices.forEach {
-            println("New device discovered: $it")
+            logger.info("New device discovered: $it")
         }
         removedDevices.forEach {
-            println("Device no longer connected: $it")
+            logger.info("Device no longer connected: $it")
         }
     }
 
     private fun updateExistingDevices(discoveredDevices: HashSet<Device>) {
         discoveredDevices.forEach { discoveredDevice ->
-            connectedDevices.stream().map { connectedDevice ->
+            connectedDevices.forEach { connectedDevice ->
                 if (discoveredDevice == connectedDevice) {
                     connectedDevice.ipAddress = discoveredDevice.ipAddress
                     connectedDevice.frequencyBand = discoveredDevice.frequencyBand
