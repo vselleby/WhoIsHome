@@ -1,6 +1,5 @@
 package webapi
 
-import Context
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -8,8 +7,9 @@ import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import device.Device
+import device.DeviceHandler
 import java.util.logging.Logger
-import javax.ws.rs.NotFoundException
+import javax.inject.Inject
 import javax.ws.rs.POST
 import javax.ws.rs.PathParam
 
@@ -17,9 +17,7 @@ import javax.ws.rs.PathParam
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("devices")
-class RestWebApi {
-    //TODO: Replace this with dependency injection if possible
-    private val deviceHandler = Context.instance.deviceHandler
+class RestWebApi @Inject constructor(private val deviceHandler: DeviceHandler) {
     private val logger = Logger.getLogger(RestWebApi::class.java.name)
 
     @GET
@@ -31,13 +29,13 @@ class RestWebApi {
 
     @GET
     fun list() : List<Device> {
-        return deviceHandler?.connectedDevices?.toList() ?: emptyList()
+        return deviceHandler.connectedDevices.toList()
     }
 
     @GET
     @Path("{macAddress}")
     fun getDevice(@PathParam("macAddress") macAddress: String) : Device? {
-        return deviceHandler?.getDevice(macAddress)
+        return deviceHandler.getDevice(macAddress)
     }
 
     @POST
@@ -46,14 +44,14 @@ class RestWebApi {
         logger.info("DeviceModificationRequest with name:${request.name} and notificationEnabled:${request.notificationEnabled}")
         val immutableName = request.name
         if (!immutableName.isNullOrEmpty()) {
-            deviceHandler?.setName(macAddress, immutableName)
+            deviceHandler.setName(macAddress, immutableName)
         }
 
         val immutableNotification = request.notificationEnabled
         if (immutableNotification != null) {
-            deviceHandler?.setNotification(macAddress, immutableNotification)
+            deviceHandler.setNotification(macAddress, immutableNotification)
         }
-        return deviceHandler?.getDevice(macAddress) ?: throw NotFoundException("Device with MacAddress: $macAddress not found")
+        return deviceHandler.getDevice(macAddress)
     }
 }
 

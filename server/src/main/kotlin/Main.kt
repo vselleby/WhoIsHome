@@ -9,7 +9,6 @@ fun main(args: Array<String>) {
     val devicePersistor = DevicePersistor(DEVICE_FILE_PATH)
     val deviceHandler = DeviceHandler(devicePersistor)
     deviceHandler.persistentDevices = devicePersistor.load().toHashSet()
-    Context.instance.deviceHandler = deviceHandler
 
     when {
         args.size == 3 -> startSSHPoller(args[0], args[1], args[2], deviceHandler)
@@ -19,7 +18,7 @@ fun main(args: Array<String>) {
             return
         }
     }
-    val webServer = WebServer()
+    val webServer = WebServer(deviceHandler)
     webServer.start()
     Runtime.getRuntime().addShutdownHook(Thread { webServer.stop() })
 }

@@ -60,7 +60,7 @@ class DeviceHandler(private val devicePersistor: DevicePersistor) {
                 }.
                 findFirst().
                 orElseThrow {
-                    NotFoundException()
+                    NotFoundException("Device with MacAddress: $macAddress not found")
                 }
     }
 

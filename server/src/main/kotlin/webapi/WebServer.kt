@@ -1,13 +1,15 @@
 package webapi
+import device.DeviceHandler
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory.createHttpServer
 import javax.ws.rs.core.UriBuilder
 import org.glassfish.grizzly.ssl.SSLContextConfigurator
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator
+import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 
 
-class WebServer {
+class WebServer(deviceHandler: DeviceHandler) {
     private val server: HttpServer
 
     init {
@@ -18,8 +20,13 @@ class WebServer {
         sslContext.setTrustStorePass(TRUSTORE_SERVER_PWD)
 
         val resourceConfig = ResourceConfig().
+            packages("webapi", "device").
             register(RestWebApi::class.java).
-            packages("webapi")
+            register(object: AbstractBinder() {
+                override fun configure() {
+                    bind(deviceHandler).to(DeviceHandler::class.java)
+                }
+            })
 
         server = createHttpServer(
             UriBuilder.fromUri(HOST).port(PORT).build(),
