@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TableRow
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:id="@+id/device_table_row_template">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#c7d9ff"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/device_table_row_template">
 
 <EditText
     android:layout_width="wrap_content"

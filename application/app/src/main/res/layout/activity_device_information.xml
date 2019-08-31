@@ -18,7 +18,7 @@
         android:gravity="center">
 
         <TableRow
-            android:background="#0079D6"
+            android:background="#828bd6"
             android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
