@@ -1,4 +1,5 @@
 package webapi
+import camera.CameraHandler
 import device.DeviceHandler
 import org.glassfish.grizzly.http.server.HttpServer
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory.createHttpServer
@@ -9,22 +10,32 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder
 import org.glassfish.jersey.server.ResourceConfig
 
 
-class WebServer(deviceHandler: DeviceHandler) {
+class WebServer(
+    deviceHandler: DeviceHandler,
+    cameraHandler: CameraHandler,
+    trustStorePath: String,
+    trustStorePassword: String,
+    keyStorePath: String,
+    keyStorePassword: String
+) {
     private val server: HttpServer
 
     init {
-        val sslContext = SSLContextConfigurator()
-        sslContext.setKeyStoreFile(KEYSTORE_SERVER_FILE)
-        sslContext.setKeyStorePass(KEYSTORE_SERVER_PWD)
-        sslContext.setTrustStoreFile(TRUSTORE_SERVER_FILE)
-        sslContext.setTrustStorePass(TRUSTORE_SERVER_PWD)
+        val sslContext = SSLContextConfigurator().also {
+            it.setKeyStoreFile(keyStorePath)
+            it.setKeyStorePass(keyStorePassword)
+            it.setTrustStoreFile(trustStorePath)
+            it.setTrustStorePass(trustStorePassword)
+        }
 
         val resourceConfig = ResourceConfig().
-            packages("webapi", "device").
-            register(RestWebApi::class.java).
+            packages("webapi", "device", "camera").
+            register(DeviceApi::class.java).
+            register(CameraApi::class.java).
             register(object: AbstractBinder() {
                 override fun configure() {
                     bind(deviceHandler).to(DeviceHandler::class.java)
+                    bind(cameraHandler).to(CameraHandler::class.java)
                 }
             })
 
@@ -48,9 +59,5 @@ class WebServer(deviceHandler: DeviceHandler) {
     companion object {
         const val PORT = 8448
         const val HOST = "https://localhost/api/"
-        private const val KEYSTORE_SERVER_FILE = "/home/viktor/Documents/Programmering/WhoIsHome/keystore_server"
-        private const val KEYSTORE_SERVER_PWD = "yourPassword"
-        private const val TRUSTORE_SERVER_FILE = "/home/viktor/Documents/Programmering/WhoIsHome/truststore_server"
-        private const val TRUSTORE_SERVER_PWD = "yourPassword"
     }
 }

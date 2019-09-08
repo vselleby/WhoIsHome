@@ -10,7 +10,14 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.TimerTask
 
-class SSHPoller(private val user: String, private val keyPath: String, private val ipAddress: String, private val deviceHandler: DeviceHandler) : TimerTask() {
+class SSHPoller(
+    private val user: String,
+    private val keyPath: String,
+    private val ipAddress: String,
+    private val port: Int,
+    private val deviceHandler: DeviceHandler
+) : TimerTask() {
+
     private val connectedDevicesPath = "/tmp/clientlist.json"
     private val jsch = JSch()
     private lateinit var session : Session
@@ -18,7 +25,7 @@ class SSHPoller(private val user: String, private val keyPath: String, private v
 
     fun initialise() {
         jsch.addIdentity(keyPath)
-        session = jsch.getSession(user, ipAddress, 449)
+        session = jsch.getSession(user, ipAddress, port)
         session.setConfig("StrictHostKeyChecking", "no")
 
         session.connect()

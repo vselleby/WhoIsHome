@@ -1,0 +1,13 @@
+{
+  "ServerConfig" : {
+    "routerAddress": "192.168.1.1",
+    "routerUser": "vselleby",
+    "routerPort": 449,
+    "pathToSSHKey": "yourSSHKeyPath",
+    "persistentDeviceFilePath": "yourPersistentDeviceFilePath",
+    "trustStorePath": "yourTrustStorePath",
+    "trustStorePassword": "yourTrustStorePassword",
+    "keyStorePath": "yourKeyStorePath",
+    "keyStorePassword": "yourKeyStorePassword"
+  }
+}

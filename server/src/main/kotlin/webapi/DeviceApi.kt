@@ -17,8 +17,8 @@ import javax.ws.rs.PathParam
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("devices")
-class RestWebApi @Inject constructor(private val deviceHandler: DeviceHandler) {
-    private val logger = Logger.getLogger(RestWebApi::class.java.name)
+class DeviceApi @Inject constructor(private val deviceHandler: DeviceHandler) {
+    private val logger = Logger.getLogger(DeviceApi::class.java.name)
 
     @GET
     @Path("ping")

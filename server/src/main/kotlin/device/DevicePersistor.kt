@@ -24,7 +24,7 @@ class DevicePersistor(private val deviceFilePath: String) {
 
     fun load() : List<Device> {
         val deviceFile = File(deviceFilePath)
-        if (deviceFile.isFile) {
+        if (deviceFile.exists() and deviceFile.isFile) {
             return gson.fromJson(FileReader(deviceFile), object : TypeToken<List<Device>>() {}.type)
         }
         return emptyList()
