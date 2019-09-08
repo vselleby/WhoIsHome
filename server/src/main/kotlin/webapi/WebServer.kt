@@ -58,6 +58,6 @@ class WebServer(
 
     companion object {
         const val PORT = 8448
-        const val HOST = "https://localhost/api/"
+        const val HOST = "https://0.0.0.0/api/"
     }
 }
