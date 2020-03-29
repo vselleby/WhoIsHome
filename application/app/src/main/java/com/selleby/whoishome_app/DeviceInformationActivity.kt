@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
-import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -39,7 +38,7 @@ class DeviceInformationActivity: AppCompatActivity() {
         tableLayout = findViewById(R.id.table_layout)
         informationTableRow = findViewById(R.id.information_table_row)
         connectionState = intent.getSerializableExtra(MainActivity.CONNECTION_KEY) as ConnectionState
-        requestQueue = Volley.newRequestQueue(this)
+        requestQueue = Volley.newRequestQueue(this, LenientHurlStack(CustomSSLSocketFactory.get(applicationContext)))
         launchDeviceInfoTask()
     }
 
@@ -50,7 +49,6 @@ class DeviceInformationActivity: AppCompatActivity() {
                 Request.Method.GET, getDeviceInfoUrl, null,
                 Response.Listener { response ->
                     parseDeviceInformationArray(response)
-
                 },
                 Response.ErrorListener { error ->
                     Log.e(TAG, "Error when fetching device information: $error")
@@ -79,7 +77,6 @@ class DeviceInformationActivity: AppCompatActivity() {
                 Log.e(TAG, "Error when modifying device: $error")
             }
         ) {
-            @Throws(AuthFailureError::class)
             override fun getHeaders(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
                 params["Content-Type"] = "application/json"
@@ -152,7 +149,6 @@ class DeviceInformationActivity: AppCompatActivity() {
                 sendDeviceModificationRequest(device, nameEditText.text.toString(), null)
             }
         }
-
     }
 
     override fun onStop() {

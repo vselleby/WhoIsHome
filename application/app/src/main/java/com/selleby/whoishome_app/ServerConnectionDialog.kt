@@ -11,6 +11,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import java.net.InetAddress
 import java.net.UnknownHostException
+import java.util.logging.Logger
 
 class ServerConnectionDialog(context: Context, private val connectionStateHandler: ConnectionStateHandler) : ConnectionDialog(context) {
     private var serverAddressEditText : EditText? = null
@@ -33,19 +34,20 @@ class ServerConnectionDialog(context: Context, private val connectionStateHandle
             connectionStateHandler.connectionState.serverPort = port
             try {
                 val inetAddress = InetAddress.getByName(serverAddress)
-                val requestQueue = Volley.newRequestQueue(context)
+                val requestQueue = Volley.newRequestQueue(context, LenientHurlStack(CustomSSLSocketFactory.get(context)))
                 requestQueue.add(
                     JsonObjectRequest(
                         Request.Method.GET,
                         "https://${inetAddress.hostAddress}:$port/api/devices/ping",
                         null,
-                        Response.Listener { _ ->
+                        Response.Listener {
                             Toast.makeText(context, "Successfully connected to server", Toast.LENGTH_LONG).show()
                             connectionStateHandler.connected = true
                             dismiss()
                             requestQueue.stop()
                         },
                         Response.ErrorListener { error ->
+                            Logger.getLogger("ServerConnectionDialog").severe(error.cause.toString())
                             displayConnectionError("Error when trying to connect to server:  ${error?.networkResponse?.statusCode}")
                             requestQueue.stop()
                         }

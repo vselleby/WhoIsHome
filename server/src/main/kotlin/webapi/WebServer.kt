@@ -21,11 +21,11 @@ class WebServer(
     private val server: HttpServer
 
     init {
-        val sslContext = SSLContextConfigurator().also {
-            it.setKeyStoreFile(keyStorePath)
-            it.setKeyStorePass(keyStorePassword)
-            it.setTrustStoreFile(trustStorePath)
-            it.setTrustStorePass(trustStorePassword)
+        val sslContext = SSLContextConfigurator().apply {
+            setKeyStoreFile(keyStorePath)
+            setKeyStorePass(keyStorePassword)
+            setTrustStoreFile(trustStorePath)
+            setTrustStorePass(trustStorePassword)
         }
 
         val resourceConfig = ResourceConfig().
@@ -43,7 +43,7 @@ class WebServer(
             UriBuilder.fromUri(HOST).port(PORT).build(),
             resourceConfig,
             true,
-            SSLEngineConfigurator(sslContext).setClientMode(false).setNeedClientAuth(false)
+            SSLEngineConfigurator(sslContext).setClientMode(false).setNeedClientAuth(true)
         )
     }
 
