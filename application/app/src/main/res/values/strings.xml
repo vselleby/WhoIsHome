@@ -15,4 +15,8 @@
     <string name="mac_address">MAC Address</string>
     <string name="ip_address">IP Address</string>
     <string name="notification">Notification</string>
+    <string name="camera">Camera</string>
+    <string name="snapshot">Snapshot</string>
+    <string name="video">Video</string>
+    <string name="close">Close</string>
 </resources>

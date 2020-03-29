@@ -9,8 +9,8 @@ import javax.net.ssl.TrustManagerFactory
 
 
 object CustomSSLSocketFactory {
-    private val KEYSTORE_PASSWORD = "PASSWORD".toCharArray()
-    private val TRUSTSTORE_PASSWORD = "PASSWORD".toCharArray()
+    private val KEYSTORE_PASSWORD = "3lefantbajs_client".toCharArray()
+    private val TRUSTSTORE_PASSWORD = "3lefantbajs_trust".toCharArray()
     @Volatile private var FACTORY : SSLSocketFactory? = null
 
 

@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DeviceInformationActivity"/>
+        <activity android:name=".CameraActivity" />
     </application>
 
 </manifest>

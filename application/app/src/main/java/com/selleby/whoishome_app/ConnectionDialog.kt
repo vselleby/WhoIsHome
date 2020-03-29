@@ -10,7 +10,6 @@ import android.widget.Button
 import android.widget.RelativeLayout
 
 abstract class ConnectionDialog(context: Context) : Dialog(context) {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)

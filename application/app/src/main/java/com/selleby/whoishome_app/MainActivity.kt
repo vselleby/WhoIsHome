@@ -9,6 +9,7 @@ class MainActivity : AppCompatActivity(), ConnectionListener {
     private val connectionStateHandler = ConnectionStateHandler()
     private lateinit var serverConnectionButton: Button
     private lateinit var deviceInformationButton: Button
+    private lateinit var cameraButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity(), ConnectionListener {
     private fun createButtons() {
         serverConnectionButton = findViewById(R.id.server_button)
         deviceInformationButton = findViewById(R.id.device_information_button)
+        cameraButton = findViewById(R.id.camera_button)
 
         serverConnectionButton.setOnClickListener {
             val serverConnectionDialog = ServerConnectionDialog(this, connectionStateHandler)
@@ -28,16 +30,20 @@ class MainActivity : AppCompatActivity(), ConnectionListener {
 
         deviceInformationButton.setOnClickListener {
             val intent = Intent(this, DeviceInformationActivity::class.java)
-            val connectionStateBundle = Bundle()
-            connectionStateBundle.putSerializable(CONNECTION_KEY, connectionStateHandler.connectionState)
-            intent.putExtras(connectionStateBundle)
+            intent.putExtras(Bundle().apply { putSerializable(CONNECTION_KEY, connectionStateHandler.connectionState) })
             startActivity(intent)
         }
 
+        cameraButton.setOnClickListener {
+            val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtras(Bundle().apply { putSerializable(CONNECTION_KEY, connectionStateHandler.connectionState) })
+            startActivity(intent)
+        }
     }
 
     override fun connectionStateUpdated(connected: Boolean) {
         deviceInformationButton.isEnabled = connected
+        cameraButton.isEnabled = connected
     }
 
     companion object {
